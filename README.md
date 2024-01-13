@@ -8,3 +8,5 @@ A user can signup, login and look for financial advisors in his city. He can als
 
 Admin:
 An admin can signup to list himself to the users , can login and view his appointments.
+
+<img width="1280" alt="Screenshot 2024-01-13 at 5 08 01 PM" src="https://github.com/HarshModi2005/django-app/assets/142230924/265dcda6-0e5d-495b-ab8c-49cf934409b6">
