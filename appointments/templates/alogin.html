@@ -1,0 +1,25 @@
+{% extends "entry_base.html"%}
+{% block title %}Admin Login{% endblock title %}
+{%block message%}Login{%endblock%}
+
+{%block form%}
+
+<form method="post" action="">
+    
+     {% csrf_token %}
+
+    <div class="form-floating">
+      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="emaillogin">
+      <label for="floatingInput">Email address</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="passwordlogin">
+      <label for="floatingPassword">Password</label>
+    </div>
+
+    
+    <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
+    
+</form>
+
+{%endblock form%}
