@@ -56,3 +56,4 @@ An admin can signup to list himself to the users , can login and view his appoin
 <img width="1280" alt="Screenshot 2024-01-13 at 5 27 50 PM" src="https://github.com/HarshModi2005/django-app/assets/142230924/f71e2a3c-f024-4d64-a0fd-fd8d891c097d">
 <img width="1280" alt="Screenshot 2024-01-13 at 5 27 43 PM" src="https://github.com/HarshModi2005/django-app/assets/142230924/0f4821bb-5c4f-4323-8fef-8c0338dd6452">
 
+
