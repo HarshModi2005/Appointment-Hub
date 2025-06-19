@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4><i class="fas fa-edit me-2"></i>Edit Profile</h4>
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Profile
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Display non-field errors -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="row">
+                                <!-- Profile Picture Section -->
+                                <div class="col-md-4 text-center mb-4">
+                                    <label class="form-label fw-bold">Profile Picture</label>
+                                    <div class="mb-3">
+                                        {% if form.instance.profile_picture %}
+                                            <img src="{{ form.instance.profile_picture.url }}" alt="Current Profile Picture" 
+                                                 class="img-fluid rounded-circle mb-3" 
+                                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                                 style="width: 150px; height: 150px;">
+                                                <i class="fas fa-user fa-4x text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ form.profile_picture }}
+                                        {% if form.profile_picture.errors %}
+                                            <div class="text-danger small">
+                                                {{ form.profile_picture.errors }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-text">
+                                            Upload a new profile picture (optional)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Fields Section -->
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <!-- Phone Number -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.phone.id_for_label }}" class="form-label fw-bold">
+                                                <i class="fas fa-phone me-1"></i>Phone Number
+                                            </label>
+                                            {{ form.phone }}
+                                            {% if form.phone.errors %}
+                                                <div class="text-danger small">
+                                                    {{ form.phone.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- City -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.city.id_for_label }}" class="form-label fw-bold">
+                                                <i class="fas fa-city me-1"></i>City
+                                            </label>
+                                            {{ form.city }}
+                                            {% if form.city.errors %}
+                                                <div class="text-danger small">
+                                                    {{ form.city.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- State -->
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.state.id_for_label }}" class="form-label fw-bold">
+                                                <i class="fas fa-map-marker-alt me-1"></i>State
+                                            </label>
+                                            {{ form.state }}
+                                            {% if form.state.errors %}
+                                                <div class="text-danger small">
+                                                    {{ form.state.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div class="col-12 mb-3">
+                                            <label for="{{ form.address.id_for_label }}" class="form-label fw-bold">
+                                                <i class="fas fa-home me-1"></i>Address
+                                            </label>
+                                            {{ form.address }}
+                                            {% if form.address.errors %}
+                                                <div class="text-danger small">
+                                                    {{ form.address.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-1"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User Information Card -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info-circle me-2"></i>Account Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Username:</strong> {{ user.username }}</p>
+                                <p><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Account Type:</strong> 
+                                    <span class="badge bg-{% if form.instance.user_type == 'professional' %}success{% else %}primary{% endif %}">
+                                        {{ form.instance.get_user_type_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Member Since:</strong> {{ form.instance.created_at|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                To change your email or password, please use the 
+                                <a href="{% url 'accounts:password_change' %}">password change</a> option.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add Bootstrap classes to form fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add form-control class to all input fields
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea, select');
+            inputs.forEach(function(input) {
+                if (!input.classList.contains('btn')) {
+                    input.classList.add('form-control');
+                }
+            });
+
+            // Add form-control class to file input
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(function(input) {
+                input.classList.add('form-control');
+            });
+
+            // Handle profile picture preview
+            const profilePictureInput = document.querySelector('input[type="file"]');
+            if (profilePictureInput) {
+                profilePictureInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.querySelector('img[alt="Current Profile Picture"], .bg-secondary');
+                            if (img.tagName === 'IMG') {
+                                img.src = e.target.result;
+                            } else {
+                                // Replace the placeholder div with an image
+                                const newImg = document.createElement('img');
+                                newImg.src = e.target.result;
+                                newImg.alt = 'Profile Picture Preview';
+                                newImg.className = 'img-fluid rounded-circle mb-3';
+                                newImg.style.cssText = 'width: 150px; height: 150px; object-fit: cover;';
+                                img.parentNode.replaceChild(newImg, img);
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

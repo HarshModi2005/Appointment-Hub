@@ -1,0 +1,266 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Professional Profile - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .edit-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'professionals:dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="card edit-card">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                        <h4><i class="fas fa-edit me-2"></i>Edit Professional Profile</h4>
+                        <a href="{% url 'professionals:dashboard' %}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Display non-field errors -->
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="row">
+                                <!-- Basic Information -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-tags me-1"></i>Category
+                                    </label>
+                                    {{ form.category }}
+                                    {% if form.category.errors %}
+                                        <div class="text-danger small">{{ form.category.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.business_name.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-building me-1"></i>Business Name
+                                    </label>
+                                    {{ form.business_name }}
+                                    {% if form.business_name.errors %}
+                                        <div class="text-danger small">{{ form.business_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.license_number.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-certificate me-1"></i>License Number
+                                    </label>
+                                    {{ form.license_number }}
+                                    {% if form.license_number.errors %}
+                                        <div class="text-danger small">{{ form.license_number.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.experience.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Experience
+                                    </label>
+                                    {{ form.experience }}
+                                    {% if form.experience.errors %}
+                                        <div class="text-danger small">{{ form.experience.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Pricing -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.hourly_rate.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-dollar-sign me-1"></i>Hourly Rate
+                                    </label>
+                                    {{ form.hourly_rate }}
+                                    {% if form.hourly_rate.errors %}
+                                        <div class="text-danger small">{{ form.hourly_rate.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.consultation_fee.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-dollar-sign me-1"></i>Consultation Fee
+                                    </label>
+                                    {{ form.consultation_fee }}
+                                    {% if form.consultation_fee.errors %}
+                                        <div class="text-danger small">{{ form.consultation_fee.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-1"></i>Phone Number
+                                    </label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger small">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-city me-1"></i>City
+                                    </label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <div class="text-danger small">{{ form.city.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-1"></i>State
+                                    </label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                        <div class="text-danger small">{{ form.state.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.website.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-globe me-1"></i>Website
+                                    </label>
+                                    {{ form.website }}
+                                    {% if form.website.errors %}
+                                        <div class="text-danger small">{{ form.website.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.linkedin.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fab fa-linkedin me-1"></i>LinkedIn
+                                    </label>
+                                    {{ form.linkedin }}
+                                    {% if form.linkedin.errors %}
+                                        <div class="text-danger small">{{ form.linkedin.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Full width fields -->
+                                <div class="col-12 mb-3">
+                                    <label for="{{ form.address.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Address
+                                    </label>
+                                    {{ form.address }}
+                                    {% if form.address.errors %}
+                                        <div class="text-danger small">{{ form.address.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="{{ form.specializations.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-star me-1"></i>Specializations
+                                    </label>
+                                    {{ form.specializations }}
+                                    {% if form.specializations.errors %}
+                                        <div class="text-danger small">{{ form.specializations.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Comma-separated list of your specializations</div>
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="{{ form.bio.id_for_label }}" class="form-label fw-bold">
+                                        <i class="fas fa-user me-1"></i>Professional Bio
+                                    </label>
+                                    {{ form.bio }}
+                                    {% if form.bio.errors %}
+                                        <div class="text-danger small">{{ form.bio.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">Tell clients about yourself and your professional background</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                                <a href="{% url 'professionals:dashboard' %}" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add form-control class to all form fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const formFields = document.querySelectorAll('input, select, textarea');
+            formFields.forEach(field => {
+                if (!field.classList.contains('btn')) {
+                    field.classList.add('form-control');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

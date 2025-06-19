@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .booking-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .professional-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-book {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+        }
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                    <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                    </form>
+                {% else %}
+                    <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                    <a class="nav-link" href="{% url 'accounts:signup' %}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'professionals:list' %}">Professionals</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'professionals:detail' professional.pk %}">{{ professional.user.get_full_name }}</a></li>
+                        <li class="breadcrumb-item active">Book Appointment</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card booking-card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-calendar-plus me-2"></i>Book Your Appointment
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <!-- Subject -->
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-comment me-1"></i>Subject *
+                                    </label>
+                                    {{ form.subject }}
+                                    {% if form.subject.errors %}
+                                        <div class="text-danger small">{{ form.subject.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Appointment Type -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-tags me-1"></i>Appointment Type
+                                    </label>
+                                    {{ form.appointment_type }}
+                                    {% if form.appointment_type.errors %}
+                                        <div class="text-danger small">{{ form.appointment_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Date -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-1"></i>Preferred Date *
+                                    </label>
+                                    {{ form.date }}
+                                    {% if form.date.errors %}
+                                        <div class="text-danger small">{{ form.date.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Start Time -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Start Time *
+                                    </label>
+                                    {{ form.start_time }}
+                                    {% if form.start_time.errors %}
+                                        <div class="text-danger small">{{ form.start_time.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- End Time -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>End Time *
+                                    </label>
+                                    {{ form.end_time }}
+                                    {% if form.end_time.errors %}
+                                        <div class="text-danger small">{{ form.end_time.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Description -->
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-file-text me-1"></i>Description (Optional)
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="text-danger small">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-book btn-lg">
+                                    <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                                </button>
+                                <a href="{% url 'professionals:detail' professional.pk %}" class="btn btn-outline-secondary btn-lg ms-2">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Professional Summary -->
+                <div class="card booking-card">
+                    <div class="card-header">
+                        <h6><i class="fas fa-user me-1"></i>Professional Details</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if professional.profile_picture %}
+                            <img src="{{ professional.profile_picture.url }}" alt="Professional Photo" class="img-fluid rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <h6>{{ professional.user.get_full_name }}</h6>
+                        <p class="text-muted small">{{ professional.category.name }}</p>
+                        
+                        {% if professional.experience %}
+                            <p class="small mb-1"><strong>Experience:</strong> {{ professional.get_experience_display }}</p>
+                        {% endif %}
+                        
+                        {% if professional.city and professional.state %}
+                            <p class="small mb-1"><strong>Location:</strong> {{ professional.city }}, {{ professional.state }}</p>
+                        {% endif %}
+                        
+                        <hr>
+                        <div class="text-center">
+                            <p class="mb-1"><strong>Consultation Fee</strong></p>
+                            <h5 class="text-primary">${{ professional.consultation_fee }}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Important Notes -->
+                <div class="card booking-card mt-3">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info-circle me-1"></i>Important Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Appointments require confirmation</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Cancellation allowed up to 24 hours</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Payment due before appointment</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Reminder notifications sent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Appointment Hub</h5>
+                    <p class="text-muted">Connect with verified financial professionals for your needs.</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-muted">Home</a></li>
+                        <li><a href="{% url 'professionals:list' %}" class="text-muted">Find Professionals</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'bookings:my_appointments' %}" class="text-muted">My Appointments</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <hr class="text-muted">
+            <div class="text-center text-muted">
+                <p>&copy; 2025 Appointment Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-calculate end time based on start time + 1 hour
+        document.addEventListener('DOMContentLoaded', function() {
+            const startTimeInput = document.querySelector('input[name="start_time"]');
+            const endTimeInput = document.querySelector('input[name="end_time"]');
+            
+            if (startTimeInput && endTimeInput) {
+                startTimeInput.addEventListener('change', function() {
+                    const startTime = this.value;
+                    if (startTime) {
+                        const [hours, minutes] = startTime.split(':');
+                        const endHour = (parseInt(hours) + 1) % 24;
+                        const endTime = `${endHour.toString().padStart(2, '0')}:${minutes}`;
+                        endTimeInput.value = endTime;
+                    }
+                });
+            }
+            
+            // Set minimum date to today
+            const dateInput = document.querySelector('input[name="date"]');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+            }
+        });
+    </script>
+</body>
+</html>

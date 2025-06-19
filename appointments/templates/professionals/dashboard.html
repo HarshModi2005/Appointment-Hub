@@ -1,0 +1,291 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .profile-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'professionals:dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'professionals:profile_edit' %}">Edit Profile</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="h2 mb-0">
+                    <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                    Professional Dashboard
+                </h1>
+                <p class="text-muted">Welcome back, {{ professional.user.get_full_name|default:professional.user.username }}!</p>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card dashboard-card stat-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                        <h3 class="mb-0">{{ professional.appointments.count }}</h3>
+                        <p class="mb-0">Total Appointments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-star fa-2x mb-2"></i>
+                        <h3 class="mb-0">{{ professional.rating|floatformat:1 }}</h3>
+                        <p class="mb-0">Average Rating</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h3 class="mb-0">{{ professional.total_reviews }}</h3>
+                        <p class="mb-0">Total Reviews</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                    <div class="card-body text-center">
+                        <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                        <h3 class="mb-0">${{ professional.consultation_fee }}</h3>
+                        <p class="mb-0">Consultation Fee</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Information & Quick Actions -->
+        <div class="row">
+            <!-- Profile Information -->
+            <div class="col-md-8">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> {{ professional.user.get_full_name|default:professional.user.username }}</p>
+                                <p><strong>Email:</strong> {{ professional.user.email }}</p>
+                                <p><strong>Category:</strong> {{ professional.category.name }}</p>
+                                <p><strong>Experience:</strong> {{ professional.get_experience_display }}</p>
+                                {% if professional.phone %}
+                                    <p><strong>Phone:</strong> {{ professional.phone }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if professional.business_name %}
+                                    <p><strong>Business:</strong> {{ professional.business_name }}</p>
+                                {% endif %}
+                                {% if professional.city %}
+                                    <p><strong>Location:</strong> {{ professional.city }}{% if professional.state %}, {{ professional.state }}{% endif %}</p>
+                                {% endif %}
+                                <p><strong>Hourly Rate:</strong> ${{ professional.hourly_rate }}</p>
+                                <p><strong>Consultation Fee:</strong> ${{ professional.consultation_fee }}</p>
+                                <p><strong>Status:</strong> 
+                                    {% if professional.is_available %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Unavailable</span>
+                                    {% endif %}
+                                    {% if professional.is_verified %}
+                                        <span class="badge bg-primary">Verified</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        {% if professional.bio %}
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <p><strong>Bio:</strong></p>
+                                    <p class="text-muted">{{ professional.bio }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-md-4">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'professionals:profile_edit' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </a>
+                            <a href="#" class="btn btn-outline-info" onclick="alert('Feature coming soon!')">
+                                <i class="fas fa-calendar-alt me-2"></i>Manage Schedule
+                            </a>
+                            <a href="#" class="btn btn-outline-warning" onclick="alert('Feature coming soon!')">
+                                <i class="fas fa-chart-line me-2"></i>View Analytics
+                            </a>
+                            <a href="{% url 'professionals:list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-eye me-2"></i>View Public Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>                <!-- Profile Completion -->
+                <div class="card dashboard-card mt-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0"><i class="fas fa-tasks me-2"></i>Profile Completion</h6>
+                    </div>
+                    <div class="card-body">
+                        {% with completion_score=0 %}
+                            <!-- Calculate completion percentage based on filled fields -->
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="text-muted">Profile is partially complete</small>
+                            
+                            <div class="mt-2">
+                                <small class="text-muted">Complete your profile to attract more clients!</small>
+                                <ul class="small text-muted mt-1">
+                                    {% if not professional.bio or professional.bio == 'Please update your professional information.' %}
+                                        <li>Add a professional bio</li>
+                                    {% endif %}
+                                    {% if not professional.phone %}
+                                        <li>Add your phone number</li>
+                                    {% endif %}
+                                    {% if not professional.city %}
+                                        <li>Add your location</li>
+                                    {% endif %}
+                                    {% if not professional.business_name %}
+                                        <li>Add your business name</li>
+                                    {% endif %}
+                                    {% if professional.specializations == 'General consulting' %}
+                                        <li>Update your specializations</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity (Placeholder) -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card dashboard-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if professional.appointments.all %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Client</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                            <th>Fee</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for appointment in professional.appointments.all|slice:":5" %}
+                                            <tr>
+                                                <td>{{ appointment.client.get_full_name|default:appointment.client.username }}</td>
+                                                <td>{{ appointment.date }}</td>
+                                                <td>{{ appointment.start_time }}</td>
+                                                <td>
+                                                    <span class="badge bg-{% if appointment.status == 'confirmed' %}success{% elif appointment.status == 'pending' %}warning{% elif appointment.status == 'completed' %}primary{% else %}secondary{% endif %}">
+                                                        {{ appointment.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td>${{ appointment.fee }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No appointments yet</h5>
+                                <p class="text-muted">Your recent appointments will appear here once clients start booking with you.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

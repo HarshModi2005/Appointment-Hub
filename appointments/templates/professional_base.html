@@ -1,0 +1,50 @@
+{% extends "uhome.html" %}
+{% load static %} 
+
+{%block admins%}
+
+
+
+{% comment %} class="card" class="card-body" {% endcomment %}
+<div style=" display: grid ; grid-template-columns: auto auto auto auto; justify-content: start;">       
+    {% for x in QuerySet %}
+     <div  style="width: 17rem; height: 12rem; border-style: solid; color: #212529BF; border-width: 1px; border-radius: 1rem ; margin: 1rem ; padding: 1rem ;display: flex; flex-direction: column; justify-content: space-between;">
+        
+        {% csrf_token %}
+        <div style="display: flex; flex-direction: column; justify-content: space-evenly;">
+          <h3 class="card-title" style="padding: 1.25px;">{{x.fullname}}</h3>
+          
+          <p class="card-text" style="font-size: 1.5rem; margin: 0px; padding: 1.25px;">{{x.profession}}</p>
+          <p class="card-text" style="font-size: 1.25rem; padding: 1.25px;">Charges : {{x.charges}}</p>
+          
+         
+        </div>
+       
+        <button type="button" class="btn btn-primary"  ><a href= {% url 'bookingpagelink' nameurl=x.fullname %} style="text-decoration: none; color : white;">Book Now</a></button>
+      
+    </div> 
+        
+    {% endfor %}
+    
+</div>   
+    
+    {% comment %} <div class="card" aria-hidden="true">
+        <div class="card-body">
+          <h5 class="card-title placeholder-glow">
+            <span class="placeholder col-6">Email: {{x.email}}</span>
+          </h5>
+          <p class="card-text placeholder-glow">
+            <span class="placeholder col-7">Profession: {{x.profession}}</span>
+            <div></div>
+            <span class="placeholder col-4">Charges: {{x.charges}}</span>
+            
+          </p>
+          <button type="button" class="w-100 btn btn-lg btn-primary"><a href="bookingpage/">Book Now</a></button>
+        </div>
+      </div> {% endcomment %}
+    
+    
+    
+
+
+{%endblock admins%}

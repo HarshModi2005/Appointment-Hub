@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews for {{ professional.user.get_full_name }} - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .review-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        .rating-stars {
+            color: #ffc107;
+        }
+        .professional-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                    <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                    </form>
+                {% else %}
+                    <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                    <a class="nav-link" href="{% url 'accounts:signup' %}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Professional Summary -->
+        <div class="professional-summary mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>{{ professional.user.get_full_name }}</h2>
+                    <p class="mb-1">{{ professional.category.name }}</p>
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= professional.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="ms-2">{{ professional.rating|floatformat:1 }} ({{ professional.total_reviews }} reviews)</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'professionals:detail' professional.pk %}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Profile
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'professionals:add_review' professional.pk %}" class="btn btn-warning">
+                            <i class="fas fa-star me-1"></i>Add Review
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-4">
+                    <i class="fas fa-comments me-2"></i>Client Reviews
+                    <span class="badge bg-primary">{{ professional.total_reviews }}</span>
+                </h4>
+
+                {% if professional.reviews.all %}
+                    {% for review in professional.reviews.all %}
+                        <div class="card review-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h6 class="mb-1">{{ review.client.get_full_name|default:review.client.username }}</h6>
+                                        <div class="rating-stars">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                
+                                {% if review.comment %}
+                                    <p class="mb-0">{{ review.comment }}</p>
+                                {% else %}
+                                    <p class="mb-0 text-muted fst-italic">No comment provided.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="card review-card">
+                        <div class="card-body text-center py-5">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No reviews yet</h5>
+                            <p class="text-muted">Be the first to leave a review for {{ professional.user.get_full_name }}!</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'professionals:add_review' professional.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-star me-1"></i>Write a Review
+                                </a>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login to Review
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'professionals:book' professional.pk %}" class="btn btn-success btn-lg me-2">
+                        <i class="fas fa-calendar-plus me-1"></i>Book Appointment
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-success btn-lg me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                    </a>
+                {% endif %}
+                <a href="{% url 'professionals:list' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-search me-1"></i>Find Other Professionals
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

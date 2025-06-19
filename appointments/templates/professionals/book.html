@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .booking-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .professional-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-book {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+        }
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Professional Info -->
+        <div class="professional-info mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2><i class="fas fa-calendar-plus me-2"></i>Book Appointment</h2>
+                    <h4>{{ professional.user.get_full_name }}</h4>
+                    <p class="mb-1">{{ professional.category.name }}</p>
+                    <p class="mb-0">Consultation Fee: <strong>${{ professional.consultation_fee }}</strong></p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'professionals:detail' professional.pk %}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Booking Form -->
+                <div class="card booking-card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-calendar me-1"></i>Appointment Details</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <!-- Subject -->
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-comment me-1"></i>Subject *
+                                    </label>
+                                    <input type="text" name="subject" class="form-control" placeholder="Brief description of your appointment" required>
+                                </div>
+
+                                <!-- Appointment Type -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-tags me-1"></i>Appointment Type
+                                    </label>
+                                    <select name="appointment_type" class="form-control">
+                                        <option value="consultation">Consultation</option>
+                                        <option value="follow_up">Follow-up</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+
+                                <!-- Date -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-1"></i>Preferred Date *
+                                    </label>
+                                    <input type="date" name="date" class="form-control" required min="{% now 'Y-m-d' %}">
+                                </div>
+
+                                <!-- Time -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Start Time *
+                                    </label>
+                                    <input type="time" name="start_time" class="form-control" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>End Time *
+                                    </label>
+                                    <input type="time" name="end_time" class="form-control" required>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-file-text me-1"></i>Description (Optional)
+                                    </label>
+                                    <textarea name="description" class="form-control" rows="4" placeholder="Please provide any additional details about your appointment..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-book btn-lg">
+                                    <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Professional Summary -->
+                <div class="card booking-card">
+                    <div class="card-header">
+                        <h6><i class="fas fa-user me-1"></i>Professional Details</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if professional.profile_picture %}
+                            <img src="{{ professional.profile_picture.url }}" alt="Professional Photo" class="img-fluid rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        
+                        <h6>{{ professional.user.get_full_name }}</h6>
+                        <p class="text-muted small">{{ professional.category.name }}</p>
+                        
+                        {% if professional.experience %}
+                            <p class="small mb-1"><strong>Experience:</strong> {{ professional.get_experience_display }}</p>
+                        {% endif %}
+                        
+                        {% if professional.city and professional.state %}
+                            <p class="small mb-1"><strong>Location:</strong> {{ professional.city }}, {{ professional.state }}</p>
+                        {% endif %}
+                        
+                        <hr>
+                        <div class="text-center">
+                            <p class="mb-1"><strong>Consultation Fee</strong></p>
+                            <h5 class="text-primary">${{ professional.consultation_fee }}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Important Notes -->
+                <div class="card booking-card mt-3">
+                    <div class="card-header">
+                        <h6><i class="fas fa-info-circle me-1"></i>Important Notes</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="small mb-0">
+                            <li>Appointments are subject to professional availability</li>
+                            <li>You will receive confirmation within 24 hours</li>
+                            <li>Cancellation must be made 24 hours in advance</li>
+                            <li>Payment is due at the time of service</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set minimum date to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[name="date"]');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            
+            // Auto-calculate end time when start time is selected
+            const startTimeInput = document.querySelector('input[name="start_time"]');
+            const endTimeInput = document.querySelector('input[name="end_time"]');
+            
+            startTimeInput.addEventListener('change', function() {
+                if (this.value) {
+                    const startTime = new Date('2000-01-01 ' + this.value);
+                    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // Add 1 hour
+                    const endTimeString = endTime.toTimeString().slice(0, 5);
+                    endTimeInput.value = endTimeString;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

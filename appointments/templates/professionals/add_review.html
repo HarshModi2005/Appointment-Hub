@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Review - Appointment Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .review-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .star-rating {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+        .star-rating .star {
+            transition: color 0.2s;
+        }
+        .star-rating .star:hover,
+        .star-rating .star.active {
+            color: #ffc107;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
+                <i class="fas fa-calendar-check me-2"></i>Appointment Hub
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'accounts:profile' %}">Profile</a>
+                <form method="post" action="{% url 'accounts:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit; padding: 0.5rem 1rem;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card review-card">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="fas fa-star me-2"></i>Add Review</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Professional Info -->
+                        <div class="text-center mb-4 p-3 bg-light rounded">
+                            <h5>Reviewing: {{ object.user.get_full_name }}</h5>
+                            <p class="text-muted">{{ object.category.name }}</p>
+                        </div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Rating -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Rating *</label>
+                                <div class="star-rating text-center" id="starRating">
+                                    <span class="star" data-value="1"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-value="2"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-value="3"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-value="4"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-value="5"><i class="fas fa-star"></i></span>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span id="ratingText" class="text-muted">Click stars to rate</span>
+                                </div>
+                                {{ form.rating.as_hidden }}
+                                {% if form.rating.errors %}
+                                    <div class="text-danger small">{{ form.rating.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Comment -->
+                            <div class="mb-4">
+                                <label for="{{ form.comment.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-comment me-1"></i>Your Review (Optional)
+                                </label>
+                                {{ form.comment }}
+                                {% if form.comment.errors %}
+                                    <div class="text-danger small">{{ form.comment.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Share your experience with this professional</div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-submit">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Review
+                                </button>
+                                <a href="{% url 'professionals:detail' object.pk %}" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('{{ form.rating.id_for_label }}');
+            const ratingText = document.getElementById('ratingText');
+            const commentField = document.getElementById('{{ form.comment.id_for_label }}');
+            
+            // Add form-control class to textarea
+            if (commentField) {
+                commentField.classList.add('form-control');
+                commentField.setAttribute('rows', '4');
+                commentField.setAttribute('placeholder', 'Tell others about your experience...');
+            }
+            
+            const ratingTexts = {
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+            
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const value = this.dataset.value;
+                    highlightStars(value);
+                });
+                
+                star.addEventListener('click', function() {
+                    const value = this.dataset.value;
+                    ratingInput.value = value;
+                    highlightStars(value);
+                    ratingText.textContent = ratingTexts[value];
+                    ratingText.classList.remove('text-muted');
+                    ratingText.classList.add('text-warning', 'fw-bold');
+                });
+            });
+            
+            function highlightStars(rating) {
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Reset on mouse leave
+            document.getElementById('starRating').addEventListener('mouseleave', function() {
+                const currentRating = ratingInput.value;
+                if (currentRating) {
+                    highlightStars(currentRating);
+                } else {
+                    stars.forEach(star => star.classList.remove('active'));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
