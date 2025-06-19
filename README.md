@@ -40,7 +40,7 @@ An admin can signup to list himself to the users , can login and view his appoin
 
 -Admin Side
 
-
+ 
 -Admin Signup
 <img width="1280" alt="Screenshot 2024-01-13 at 5 22 24 PM" src="https://github.com/HarshModi2005/django-app/assets/142230924/83ade28e-a0af-4afe-998a-a7376907db9f">
 
